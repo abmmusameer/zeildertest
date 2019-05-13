@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
+        <style type="text/css">
+            h2 { font-size: 30px; font-family: arial }
+            .cmn_dropdown { font-size: 14px; padding: 5px; color: #383838 }
+            .data_list { font: 14px/20px arial; color: #383838; }
+            .data_list b { font-size: 16px; margin: 25px 0 0px; display: block; }
+        </style>
+    </head>
+    <body>
+        <div>
+            <form>
+                <h2>Calendar</h2>
+                <select id="dropDownCountry" name="dropDownCountry" class="country cmn_dropdown">
+                    <option value="None">Select Country</option>
+                </select>                
+                <select id="dropDownYears" class="yrs cmn_dropdown">
+                    <option value="None">Select Year</option>
+                </select>
+                <br /><br />
+                <div id="mshowList">
+                    <div id="showList" class="data_list"></div>
+                </div>
+            </form>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+        <script>
+        $(document).ready(function () {
+        var myOptions = {
+        US: 'United States',
+        GB: 'Great Britain',
+        FR: 'France',
+        DE: 'Germany',
+        ID: 'Indonesia'
+        };
+        var lstCon = $('#dropDownCountry');
+        $.each(myOptions, function (val, text) {
+        lstCon.append(
+        $('<option></option>').val(val).html(text)
+        );
+        });
+        var years = ["2019", "2018", "2017", "2016"];
+        for (i = 0; i < years.length; i++) {
+        $("#dropDownYears").append("<option value=" + years[i] + ">" + years[i] + "</option>");
+        }
+        $('.yrs').change(function () {
+        var selectedCountry = $(this).children("option:selected").val();
+        getHolidays();
+        });
+        });
+        function getHolidays() {
+        $("#showList").empty();
+        var con = $("#dropDownCountry option:selected").val(); //alert(con);
+        var yr = $("#dropDownYears option:selected").text();
+        var str = "https://calendarific.com/api/v2/holidays?&api_key=91ef2a45e8c0de629abdf6c7583c589e73afa8b3&country=" + con + "&year=" + yr + "";
+        $.ajax({
+        url: str,
+        success: function (result) {
+        // alert(result.response.holidays[0].name);
+        // alert(result.response.holidays[29].name); alert(result.response.holidays[400].date.iso);
+        var y = 0;
+        var nm = 1;
+        while (y <= 400) {
+        var sty = result.response.holidays[y].date.iso;
+        var currentm = result.response.holidays[y].date.datetime.month;// alert(currentm);
+        if (sty != "" && nm == currentm) {
+        var strMon;
+        switch (currentm) {
+        case 1:
+        strMon = "JAN";
+        break;
+        case 2:
+        strMon = "FEB";
+        break;
+        case 3:
+        strMon = "MARCH";
+        break;
+        case 4:
+        strMon = "APRIL";
+        break;
+        case 5:
+        strMon = "MAY";
+        break;
+        case 6:
+        strMon = "JUNE";
+        break;
+        case 7:
+        strMon = "JULY";
+        break;
+        case 8:
+        strMon = "AUG";
+        break;
+        case 9:
+        strMon = "SEP";
+        break;
+        case 10:
+        strMon = "OCT";
+        break;
+        case 11:
+        strMon = "NOV";
+        break;
+        case 12:
+        strMon = "DEC";
+        break;
+        }
+        $("#showList").append("<b>" + strMon + " - " + yr + "</b><br/>"); var inc = 0;
+        var j = 0;
+        var count=1
+        while (count < 50) {
+        var tnm = result.response.holidays[count + y]
+        if (tnm!="") {
+        var tnm1 = tnm.date.datetime.month;
+        if (tnm1 == currentm) {
+        count++;
+        }
+        else { break; }
+        }
+        else { break; }
+        }
+        // alert(count);
+        for (j = y; j <= y + count; j++) {
+        var strISO = (result.response.holidays[j].date.iso);
+        var value = result.response.holidays[j].name;
+        nm = result.response.holidays[j].date.datetime.month;// alert(nm);
+        if (nm == currentm) {
+        inc++;
+        $("#showList").append(value + " " + strISO + "<br/>");
+        // J++;
+        }
+        else {
+        //  break;
+        }
+        }
+        //  alert("nm "+nm);
+        if (nm >13) { break; }
+        y = y + count;
+        y++;
+        }
+        else {
+        y++;
+        }
+        }
+        //for (m = 0; m <= 12; m++) {
+        //    //var mon = (result.response.holidays[m].date.datetime.month);
+        //    var strMon;
+        //    switch (m) {
+        //        case 0:
+        //            strMon = "JAN";
+        //            break;
+        //        case 1:
+        //            strMon = "FEB";
+        //            break;
+        //        case 2:
+        //            strMon = "MARCH";
+        //            break;
+        //        case 3:
+        //            strMon = "MARCH";
+        //            break;
+        //        case 4:
+        //            strMon = "APRIL";
+        //            break;
+        //        case 5:
+        //            strMon = "MAY";
+        //            break;
+        //        case 6:
+        //            strMon = "JUNE";
+        //            break;
+        //        case 7:
+        //            strMon = "JULY";
+        //            break;
+        //        case 8:
+        //            strMon = "AUG";
+        //            break;
+        //        case 9:
+        //            strMon = "SEP";
+        //            break;
+        //        case 10:
+        //            strMon = "OCT";
+        //            break;
+        //        case 11:
+        //            strMon = "NOV";
+        //            break;
+        //        case 12:
+        //            strMon = "DEC";
+        //            break;
+        //    }
+        //    $("#showList").append("<b>" + strMon + " - " + yr + "</b><br/>");
+        //    for (j = 0; j < 30; j++) {
+        //        var strISO = (result.response.holidays[m].date.iso);
+        //        var value = result.response.holidays[j].name;
+        //        //  alert(result.response.holidays[1].name);
+        //        // alert(result.response.holidays[1].name);
+        //        $("#showList").append(value + " " + strISO + "<br/>");
+        //        // $("#showList").append(value + "<br/>");
+        //    }
+        //}
+        }
+        });
+        }
+        </script>
+    </body>
+</html>
